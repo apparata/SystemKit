@@ -1,5 +1,5 @@
 //
-//  Copyright © 2016 Apparata AB. All rights reserved.
+//  Copyright © 2019 Apparata AB. All rights reserved.
 //
 
 import Foundation
@@ -51,27 +51,27 @@ public struct Path {
     fileprivate var path: String
     
     var internalPath: String {
-        return path
+        path
     }
         
     public var isAbsolute: Bool {
-        return path.first == "/"
+        path.first == "/"
     }
     
     public var isRelative: Bool {
-        return !isAbsolute
+        !isAbsolute
     }
     
     public var normalized: Path {
-        return Path((path as NSString).standardizingPath)
+        Path((path as NSString).standardizingPath)
     }
     
     public var string: String {
-        return path
+        path
     }
     
     public var url: URL {
-        return URL(fileURLWithPath: path)
+        URL(fileURLWithPath: path)
     }
     
     public init() {
@@ -87,7 +87,7 @@ public struct Path {
     }
     
     public func appending(_ path: Path) -> Path {
-        return Path((self.path as NSString).appendingPathComponent(path.path))
+        Path((self.path as NSString).appendingPathComponent(path.path))
     }
     
     public init<T: Collection>(components: T) where T.Iterator.Element == String {
@@ -100,27 +100,27 @@ public struct Path {
     }
     
     public var lastComponent: String {
-        return (path as NSString).lastPathComponent
+        (path as NSString).lastPathComponent
     }
     
     public var deletingLastComponent: Path {
-        return Path((path as NSString).deletingLastPathComponent)
+        Path((path as NSString).deletingLastPathComponent)
     }
     
     public func appendingComponent(_ string: String) -> Path {
-        return Path((path as NSString).appendingPathComponent(string))
+        Path((path as NSString).appendingPathComponent(string))
     }
     
     public func replacingLastComponent(with string: String) -> Path {
-        return deletingLastComponent.appendingComponent(string)
+        deletingLastComponent.appendingComponent(string)
     }
     
     public var `extension`: String {
-        return (path as NSString).pathExtension
+        (path as NSString).pathExtension
     }
     
     public var deletingExtension: Path {
-        return Path((path as NSString).deletingPathExtension)
+        Path((path as NSString).deletingPathExtension)
     }
     
     public func appendingExtension(_ string: String) -> Path {
@@ -132,7 +132,7 @@ public struct Path {
     }
     
     public func replacingExtension(with string: String) -> Path {
-        return deletingExtension.appendingExtension(string)
+        deletingExtension.appendingExtension(string)
     }
 }
 
@@ -140,7 +140,7 @@ public struct Path {
 
 extension Path: CustomStringConvertible {
     public var description: String {
-        return path
+        path
     }
 }
 
@@ -184,37 +184,37 @@ extension Path: Hashable {
 extension Path: Equatable {
     
     public static func ==(lhs: Path, rhs: Path) -> Bool {
-        return lhs.path == rhs.path
+        lhs.path == rhs.path
     }
 }
 
 extension Path : Comparable {
  
     public static func <(lhs: Path, rhs: Path) -> Bool {
-        return lhs.path < rhs.path
+        lhs.path < rhs.path
     }
 }
 
 // MARK: - Concatenation
 
 public func +(lhs: Path, rhs: Path) -> Path {
-    return lhs.appending(rhs)
+    lhs.appending(rhs)
 }
 
 public func +(lhs: Path, rhs: String) -> Path {
-    return lhs.appendingComponent(rhs)
+    lhs.appendingComponent(rhs)
 }
 
-// MARK: - File Management Operations
+// MARK: - File Management
 
 public extension Path {
     
     fileprivate static var fileManager: FileManager {
-        return FileManager.default
+        FileManager.default
     }
     
     fileprivate var fileManager: FileManager {
-        return FileManager.default
+        FileManager.default
     }
     
     /// Note: No-op if file does not exist.
@@ -229,15 +229,15 @@ public extension Path {
     }
     
     var exists: Bool {
-        return fileManager.fileExists(atPath: internalPath)
+        fileManager.fileExists(atPath: internalPath)
     }
     
     var doesNotExist: Bool {
-        return !exists
+        !exists
     }
     
     var isFile: Bool {
-        return !isDirectory
+        !isDirectory
     }
     
     var isDirectory: Bool {
@@ -249,23 +249,19 @@ public extension Path {
     }
     
     var isDeletable: Bool {
-        return fileManager.isDeletableFile(atPath: internalPath)
+        fileManager.isDeletableFile(atPath: internalPath)
     }
     
     var isExecutable: Bool {
-        return fileManager.isExecutableFile(atPath: internalPath)
+        fileManager.isExecutableFile(atPath: internalPath)
     }
     
     var isReadable: Bool {
-        return fileManager.isReadableFile(atPath: internalPath)
+        fileManager.isReadableFile(atPath: internalPath)
     }
     
     var isWritable: Bool {
-        return fileManager.isWritableFile(atPath: internalPath)
-    }
-    
-    static var currentDirectory: Path {
-        return Path(fileManager.currentDirectoryPath)
+        fileManager.isWritableFile(atPath: internalPath)
     }
     
     func contentsOfDirectory(fullPaths: Bool = false) throws -> [Path] {
@@ -282,20 +278,47 @@ public extension Path {
         }
         return paths
     }
+
+    func recursiveContentsOfDirectory(fullPaths: Bool = false) throws -> [Path] {
+        let pathStrings = try fileManager.subpathsOfDirectory(atPath: internalPath)
+        let paths: [Path]
+        if fullPaths {
+            paths = pathStrings.map {
+                self.appendingComponent($0)
+            }
+        } else {
+            paths = pathStrings.map {
+                Path($0)
+            }
+        }
+        return paths
+    }
+
+    static var currentDirectory: Path {
+        Path(fileManager.currentDirectoryPath)
+    }
     
-    static var documentDirectory: Path {
+    static var homeDirectory: Path {
+        Path(NSHomeDirectory())
+    }
+    
+    static var temporaryDirectory: Path {
+        Path(NSTemporaryDirectory())
+    }
+            
+    static var documentDirectory: Path? {
         if let documentDirectory = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).last {
             return Path(documentDirectory)
         } else {
-            fatalError("The Document directory could not be found.")
+            return nil
         }
     }
     
-    static var cachesDirectory: Path {
+    static var cachesDirectory: Path? {
         if let directory = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).last {
             return Path(directory)
         } else {
-            fatalError("The Caches directory could not be found.")
+            return nil
         }
     }
     
@@ -303,7 +326,7 @@ public extension Path {
     /// You need to create it if it doesn't exist. The getter of this variable
     /// will try to append the app bundle identifier to the path as recommended
     /// by Apple.
-    static var applicationSupportDirectory: Path {
+    static var applicationSupportDirectory: Path? {
         if let directory = NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).last {
             var appSupportPath = Path(directory)
             if let bundleIdentifier = Bundle.main.bundleIdentifier {
@@ -311,7 +334,31 @@ public extension Path {
             }
             return appSupportPath
         } else {
-            fatalError("The Application Support directory could not be found.")
+            return nil
+        }
+    }
+    
+    static var downloadsDirectory: Path? {
+        if let documentDirectory = NSSearchPathForDirectoriesInDomains(.downloadsDirectory, .userDomainMask, true).last {
+            return Path(documentDirectory)
+        } else {
+            return nil
+        }
+    }
+    
+    static var desktopDirectory: Path? {
+        if let documentDirectory = NSSearchPathForDirectoriesInDomains(.desktopDirectory, .userDomainMask, true).last {
+            return Path(documentDirectory)
+        } else {
+            return nil
+        }
+    }
+    
+    static var applicationsDirectory: Path? {
+        if let documentDirectory = NSSearchPathForDirectoriesInDomains(.applicationDirectory, .userDomainMask, true).last {
+            return Path(documentDirectory)
+        } else {
+            return nil
         }
     }
     
