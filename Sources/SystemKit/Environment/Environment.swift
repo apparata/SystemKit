@@ -1,53 +1,35 @@
 //
-//  Copyright © 2016 Apparata AB. All rights reserved.
+//  Copyright © 2019 Apparata AB. All rights reserved.
 //
 
 import Foundation
 
 /// Gets and sets environment variables for the current process.
 public class Environment {
-    
-    /// Shared instance got use with subscript syntax.
-    public static let variables = Environment()
-    
+        
     /// Returns a dictionary of all environment variables for
     /// the current process.
-    public var all: [String: String] {
+    public static var variables: [String: String] {
         return ProcessInfo.processInfo.environment
     }
-    
-    /// Class method that gets the value of the specified environment variable.
-    ///
-    /// - Example:
-    /// ```
-    /// let name = Environment.variable("NAME")
-    /// ```
-    ///
-    /// - Parameter name: Name of the environment variable to get value for.
-    /// - Returns: Returns value of environment variable or nil if the variable
-    ///            is not set.
-    public static func variable(_ name: String) -> String? {
-        return variables[name]
-    }
-    
-    
+        
     /// Class method that sets the value of the specificed environment variable.
     ///
     /// - Example:
     /// ```
-    /// Environment.set(variable: "NAME", "VALUE")
-    /// Environment.set(variable: "NAME", "VALUE", overwrite: false)
+    /// Environment.set("NAME", to: "VALUE")
+    /// Environment.set("NAME", to: "VALUE", overwrite: false)
     /// ```
     ///
     /// - Parameters:
     ///   - variable: Name of variable to set.
     ///   - value: Value to set variable to, or nil to unset variable.
     ///   - overwrite: Indicate whether value should be overwritten or not.
-    public static func set(variable name: String, value: String?, overwrite: Bool = true) {
+    public static func set(_ name: String, to value: String?, overwrite: Bool = true) {
         if let value = value {
             setenv(name, value, overwrite ? 1 : 0)
         } else {
-            unset(variable: name)
+            unset(name)
         }
     }
     
@@ -55,42 +37,34 @@ public class Environment {
     ///
     /// - Example:
     /// ```
-    /// Environment.unset(variable: "NAME")
+    /// Environment.unset("NAME")
     /// ```
     ///
     /// - Parameter variable: Name of the environment variable to unset.
-    public static func unset(variable name: String) {
+    public static func unset(_ name: String) {
         unsetenv(name)
-    }
-
-    /// Unsets the specified environment variable.
-    ///
-    /// - Example:
-    /// ```
-    /// let env = Environment()
-    /// env.unset(variable: "NAME")
-    /// ```
-    ///
-    /// - Parameter variable: Name of the environment variable to unset.
-    public func unset(variable: String) {
-        unsetenv(variable)
     }
     
     /// Gets or sets an environment variable using subscript syntax.
     ///
     /// - Example:
     /// ```
-    /// let name = Environment.variables["NAME"]
-    /// Environment.variables["NAME"] = "VALUE"
+    /// let name = Environment["NAME"]
+    /// Environment["NAME"] = "VALUE"
+    /// Environment["NAME"] = nil
     /// ```
     ///
     /// - Parameter key: Variable to get or set.
-    public subscript(key: String) -> String? {
+    public static subscript(key: String) -> String? {
         get {
             return ProcessInfo.processInfo.environment[key]
         }
         set {
-            setenv(key, newValue, 1)
+            guard let value = newValue else {
+                unset(key)
+                return
+            }
+            setenv(key, value, 1)
         }
     }
     
