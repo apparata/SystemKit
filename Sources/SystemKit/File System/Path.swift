@@ -386,6 +386,18 @@ public extension Path {
         try fileManager.copyItem(at: url, to: toURL)
     }
     
+    func move(to toPath: Path) throws {
+        try fileManager.moveItem(atPath: internalPath, toPath: toPath.internalPath)
+    }
+
+    func move(to toPath: String) throws {
+        try fileManager.moveItem(atPath: internalPath, toPath: toPath)
+    }
+
+    func move(to toURL: URL) throws {
+        try fileManager.moveItem(at: url, to: toURL)
+    }
+
     func safeReplace(withItemAt itemPath: Path) throws -> URL? {
         let resultingURL = try fileManager.replaceItemAt(url,
                                                          withItemAt: itemPath.url,
