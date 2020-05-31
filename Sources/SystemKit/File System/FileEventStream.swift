@@ -2,6 +2,7 @@
 //  Copyright © 2020 Apparata AB. All rights reserved.
 //
 
+#if os(macOS)
 #if canImport(CoreServices)
 import Foundation
 import CoreServices
@@ -680,3 +681,4 @@ public extension FileEvent {
         }
     }
 }
+#endif
