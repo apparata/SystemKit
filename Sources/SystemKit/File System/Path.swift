@@ -46,7 +46,7 @@ import Foundation
 /// absolutePath.isReadable
 /// absolutePath.isWritable
 /// ```
-public struct Path {
+public struct Path: Codable {
     
     fileprivate var path: String
     
