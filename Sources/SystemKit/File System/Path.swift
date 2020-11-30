@@ -407,8 +407,62 @@ public extension Path {
     }
     
     /// Set POSIX file permissions. Same as chmod. Octal number is recommended.
-    func setPosixPermissions(_ permissions: Int) throws {
-        try fileManager.setAttributes([.posixPermissions: permissions],
+    func setPosixPermissions(_ permissions: PosixPermissions) throws {
+        try fileManager.setAttributes([.posixPermissions: permissions.rawValue],
                                       ofItemAtPath: internalPath)
     }
+}
+
+public struct PosixPermissions: OptionSet, ExpressibleByIntegerLiteral {
+
+    public let rawValue: Int
+    
+    public init(rawValue: Int) {
+        self.rawValue = rawValue
+    }
+    
+    public init(integerLiteral value: Int) {
+        self.init(rawValue: value)
+    }
+    
+    /// Executable files with the `setuid` bit set will run with effective uid set to the uid of the file owner.
+    /// Directories with this bit set will force all files and sub-directories created in them to be owned by the
+    /// directory owner and not by the uid of the creating process, if the underlying file system supports this
+    /// feature: see chmod(2) and the suiddir option to mount(8).
+    public static let setuid: Self = 0o4000
+    
+    /// Executable files with the `setgid` bit set will run with effective gid set to the gid of the file owner.
+    public static let setgid: Self = 0o2000
+    
+    /// When a directory's `sticky` bit is set, the filesystem treats the files in such directories in a
+    /// special way so only the file's owner, the directory's owner, or root user can rename or delete the file.
+    /// See chmod(2) and sticky(7).
+    public static let sticky: Self = 0o1000
+    
+    /// Allow read by owner.
+    public static let readableByOwner: Self = 0o0400
+    
+    /// Allow write by owner.
+    public static let writableByOwner: Self = 0o0200
+    
+    /// For files, allow execution by owner.  For directories, allow the owner to search in the directory.
+    public static let executableByOwner: Self = 0o0100
+
+    /// Allow read by group members.
+    public static let readableByGroup: Self = 0o0040
+
+    /// Allow write by group members.
+    public static let writableByGroup: Self = 0o0020
+
+    /// For files, allow execution by group.  For directories, allow group members to search in the directory.
+    public static let executableByGroup: Self = 0o0010
+
+    /// Allow read by others.
+    public static let readableByOthers: Self = 0o0004
+
+    /// Allow write by others.
+    public static let writableByOthers: Self = 0o0002
+
+    /// For files, allow execution by others.  For directories allow others to search in the directory.
+    public static let executableByOthers: Self = 0o0001
 }
