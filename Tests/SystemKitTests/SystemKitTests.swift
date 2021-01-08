@@ -2,9 +2,6 @@ import XCTest
 @testable import SystemKit
 
 final class SystemKitTests: XCTestCase {
-    func testExample() {
-        XCTAssertEqual(true, true)
-    }
 
     func testPosixPermissions() {
         let a: PosixPermissions = [.readableByOwner,
@@ -16,8 +13,15 @@ final class SystemKitTests: XCTestCase {
         XCTAssertEqual(a.rawValue, 0o751)
     }
     
+    func testStopWatch() {
+        let stopWatch = StopWatch.started()
+        Thread.sleep(forTimeInterval: 0.4)
+        let time = stopWatch.stop()
+        XCTAssertTrue(time > 0.4 && time < 1)
+    }
+    
     static var allTests = [
-        ("testExample", testExample),
-        ("testPosixPermissions", testPosixPermissions)
+        ("testPosixPermissions", testPosixPermissions),
+        ("testStopWatch", testStopWatch),
     ]
 }

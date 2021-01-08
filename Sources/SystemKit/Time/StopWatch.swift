@@ -50,6 +50,12 @@ public final class StopWatch {
         state = .stopped
     }
     
+    public static func started() -> StopWatch {
+        let stopWatch = StopWatch()
+        stopWatch.start()
+        return stopWatch
+    }
+    
     public func start() {
         guard state == .ready else {
             print("[StopWatch] Error: start() is only valid in the .Ready state.")
@@ -58,14 +64,16 @@ public final class StopWatch {
         state = .running
         beginTime = currentTime()
     }
-    
-    public func pause() {
+        
+    @discardableResult
+    public func pause() -> TimeInterval {
         guard state == .running else {
             print("[StopWatch] Error: pause() is only valid in the .Running state.")
-            return
+            return accumulatedTime
         }
         state = .paused
         accumulatedTime += (currentTime() - beginTime)
+        return accumulatedTime
     }
     
     public func resume() {
@@ -77,13 +85,15 @@ public final class StopWatch {
         beginTime = currentTime()
     }
     
-    public func stop() {
+    @discardableResult
+    public func stop() -> TimeInterval {
         guard state != .stopped else {
             print("[StopWatch] Error: stop() is a no-op in the .Stopped state.")
-            return
+            return accumulatedTime
         }
         state = .stopped
         accumulatedTime += (currentTime() - beginTime)
+        return accumulatedTime
     }
     
     private func currentTime() -> TimeInterval {
