@@ -32,98 +32,98 @@ See the LICENSE file for licensing information.
     - [`StopWatch`](#stopwatch)
     - [`Timer`](#timer)
 
-## Environment
+# Environment
 
-### `Environment`
-
-TODO
-
-### `StandardEnvironmentVariables`
+## `Environment`
 
 TODO
 
-## Execution
+## `StandardEnvironmentVariables`
 
-### `ExecutableFinder`
+TODO
+
+# Execution
+
+## `ExecutableFinder`
 
 <sup><sup>**macOS only**<sup></sup>
 
 TODO
 
-### `Execution`
+## `Execution`
 
 <sup><sup>**macOS only**<sup></sup>
 
 TODO
 
-### `ExecutionMode`
+## `ExecutionMode`
 
 TODO
 
-## File System
+# File System
 
-### `AppDataFolder`
+## `AppDataFolder`
 
 TODO
 
-### `FileEventStream`
+## `FileEventStream`
 
 <sup><sup>**macOS only**<sup></sup>
 
 TODO
 
-### `Path`
+## `Path`
 
 TODO
 
-### `TemporaryFolder`
+## `TemporaryFolder`
 
 TODO
 
-## Key Value Store
+# Key Value Store
 
-### `FileBackedKeyValueStore`
-
-TODO
-
-### `KeyValueStore`
+## `FileBackedKeyValueStore`
 
 TODO
 
-### `MemoryBackedKeyValueStore`
+## `KeyValueStore`
 
 TODO
 
-## Subprocess
+## `MemoryBackedKeyValueStore`
 
-### `Subprocess`
+TODO
+
+# Subprocess
+
+## `Subprocess`
 
 <sup><sup>**macOS only**<sup></sup>
 
 TODO
 
-### `SubprocessError`
+## `SubprocessError`
 
 <sup><sup>**macOS only**<sup></sup>
 
 TODO
 
-### `SubprocessResult`
+## `SubprocessResult`
 
 <sup><sup>**macOS only**<sup></sup>
 
 TODO
 
-## Time
+# Time
 
-### `RelativeTime`
-
-TODO
-
-### `StopWatch`
+## `RelativeTime`
 
 TODO
 
-### `Timer`
+## `StopWatch`
+
+TODO
+
+## `Timer`
 
 TODO
