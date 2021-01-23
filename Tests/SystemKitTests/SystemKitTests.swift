@@ -20,8 +20,13 @@ final class SystemKitTests: XCTestCase {
         XCTAssertTrue(time > 0.4 && time < 1)
     }
     
+    func testIsUnitTestingCheck() {
+        XCTAssertTrue(ExecutionMode.isRunningUnitTests)
+    }
+    
     static var allTests = [
         ("testPosixPermissions", testPosixPermissions),
         ("testStopWatch", testStopWatch),
+        ("testIsUnitTestingCheck", testIsUnitTestingCheck)
     ]
 }

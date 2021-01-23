@@ -17,6 +17,15 @@ public final class ExecutionMode {
         assert(junk == 0, "sysctl failed")
         return (info.kp_proc.p_flag & P_TRACED) != 0
     }()
+    
+    /// Indicates whether the code is running under test.
+    public static let isRunningUnitTests: Bool = {
+        #if DEBUG
+        return NSClassFromString("XCTest") != nil
+        #else
+        return false
+        #endif
+    }()
 }
 
 #endif
