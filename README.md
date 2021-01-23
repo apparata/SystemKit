@@ -7,15 +7,30 @@ See the LICENSE file for licensing information.
 
 ### Table of Contents
 
-- [Contents](#contents)
-  - [Environment](#environment)
-  - [Execution](#execution)
-  - [File System](#file-system)
-  - [Key Value Store](#key-value-store)
-  - [Subprocess](#subprocess)
-  - [Time](#time)
-
-# Contents
+- [Environment](#environment)
+    - [`Environment`](#environment-1)
+    - [`StandardEnvironmentVariables`](#standardenvironmentvariables)
+- [Execution](#execution)
+    - [`ExecutableFinder`](#executablefinder) <sub><sub>macOS</sub></sub>
+    - [`Execution`](#execution-1) <sub><sub>macOS</sub></sub>
+    - [`ExecutionMode`](#executionmode)
+- [File System](#file-system)
+    - [`AppDataFolder`](#appdatafolder)
+    - [`FileEventStream`](#fileeventstream) <sub><sub>macOS</sub></sub>
+    - [`Path`](#path)
+    - [`TemporaryFolder`](#temporaryfolder)
+- [Key Value Store](#key-value-store)
+    - [`FileBackedKeyValueStore`](#filebackedkeyvaluestore)
+    - [`KeyValueStore`](#keyvaluestore)
+    - [`MemoryBackedKeyValueStore`](#memorybackedkeyvaluestore)
+- [Subprocess](#subprocess)
+    - [`Subprocess`](#subprocess) <sub><sub>macOS</sub></sub>
+    - [`SubprocessError`](#subprocesserror) <sub><sub>macOS</sub></sub>
+    - [`SubprocessResult`](#subprocessresult) <sub><sub>macOS</sub></sub>
+- [Time](#time)
+    - [`RelativeTime`](#relativetime)
+    - [`StopWatch`](#stopwatch)
+    - [`Timer`](#timer)
 
 ## Environment
 
@@ -31,9 +46,13 @@ TODO
 
 ### `ExecutableFinder`
 
+<sup><sup>**macOS only**<sup></sup>
+
 TODO
 
 ### `Execution`
+
+<sup><sup>**macOS only**<sup></sup>
 
 TODO
 
@@ -48,6 +67,8 @@ TODO
 TODO
 
 ### `FileEventStream`
+
+<sup><sup>**macOS only**<sup></sup>
 
 TODO
 
@@ -77,13 +98,19 @@ TODO
 
 ### `Subprocess`
 
+<sup><sup>**macOS only**<sup></sup>
+
 TODO
 
 ### `SubprocessError`
 
+<sup><sup>**macOS only**<sup></sup>
+
 TODO
 
 ### `SubprocessResult`
+
+<sup><sup>**macOS only**<sup></sup>
 
 TODO
 

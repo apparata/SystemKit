@@ -2,8 +2,6 @@
 //  Copyright © 2019 Apparata AB. All rights reserved.
 //
 
-#if os(macOS)
-
 import Foundation
 
 public final class ExecutionMode {
@@ -27,5 +25,3 @@ public final class ExecutionMode {
         #endif
     }()
 }
-
-#endif
