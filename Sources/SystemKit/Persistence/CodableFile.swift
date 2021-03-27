@@ -4,7 +4,7 @@
 
 import Foundation
 
-enum CodableFileError: Error {
+public enum CodableFileError: Error {
     case noSuchFile
 }
 
