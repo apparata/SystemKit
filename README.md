@@ -7,6 +7,8 @@ See the LICENSE file for licensing information.
 
 ### Table of Contents
 
+- [App](#app)
+    - [`AppStateObserver`](#appstateobserver)
 - [Environment](#environment)
     - [`Environment`](#environment-1)
     - [`StandardEnvironmentVariables`](#standardenvironmentvariables)
@@ -31,6 +33,12 @@ See the LICENSE file for licensing information.
     - [`RelativeTime`](#relativetime)
     - [`StopWatch`](#stopwatch)
     - [`Timer`](#timer)
+
+# App
+
+## `AppStateObserver`
+
+TODO
 
 # Environment
 
