@@ -8,7 +8,7 @@ See the LICENSE file for licensing information.
 ### Table of Contents
 
 - [App](#app)
-    - [`AppStateObserver`](#appstateobserver)
+    - [`AppStateObserver`](#appstateobserver) <sub><sub>iOS</sub></sub>
 - [Environment](#environment)
     - [`Environment`](#environment-1)
     - [`StandardEnvironmentVariables`](#standardenvironmentvariables)
@@ -21,10 +21,12 @@ See the LICENSE file for licensing information.
     - [`FileEventStream`](#fileeventstream) <sub><sub>macOS</sub></sub>
     - [`Path`](#path)
     - [`TemporaryFolder`](#temporaryfolder)
-- [Key Value Store](#key-value-store)
-    - [`FileBackedKeyValueStore`](#filebackedkeyvaluestore)
-    - [`KeyValueStore`](#keyvaluestore)
-    - [`MemoryBackedKeyValueStore`](#memorybackedkeyvaluestore)
+- [Persistence](#persistence)
+    - [`CodableFile`](#codablefile)
+    - [Key Value Store](#key-value-store)
+        - [`FileBackedKeyValueStore`](#filebackedkeyvaluestore)
+        - [`KeyValueStore`](#keyvaluestore)
+        - [`MemoryBackedKeyValueStore`](#memorybackedkeyvaluestore)
 - [Subprocess](#subprocess)
     - [`Subprocess`](#subprocess) <sub><sub>macOS</sub></sub>
     - [`SubprocessError`](#subprocesserror) <sub><sub>macOS</sub></sub>
@@ -88,13 +90,19 @@ TODO
 
 TODO
 
-# Key Value Store
+# Persistence
+    
+## `CodableFile`
 
-## `FileBackedKeyValueStore`
+TODO
+    
+## Key Value Store
+
+### `FileBackedKeyValueStore`
 
 TODO
 
-## `KeyValueStore`
+### `KeyValueStore`
 
 TODO
 
