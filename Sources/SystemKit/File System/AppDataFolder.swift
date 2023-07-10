@@ -16,9 +16,13 @@ public class AppDataFolder {
 
     /// URL of the documents folder.
     public static var documentsFolder: URL {
-        let fileManager = FileManager.default
-        // Force unwrap, because there MUST be a document directory.
-        return fileManager.urls(for: .documentDirectory, in: .userDomainMask).last!
+        if #available(iOS 16, macOS 13, tvOS 16, *) {
+            return URL.documentsDirectory
+        } else {
+            let fileManager = FileManager.default
+            // Force unwrap, because there MUST be a document directory.
+            return fileManager.urls(for: .documentDirectory, in: .userDomainMask).last!
+        }
     }
 
     /// URL of the app data folder.

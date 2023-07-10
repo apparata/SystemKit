@@ -1,4 +1,4 @@
-// swift-tools-version:5.2
+// swift-tools-version:5.8
 
 import PackageDescription
 
@@ -6,7 +6,7 @@ let package = Package(
     name: "SystemKit",
     platforms: [
         // Relevant platforms.
-        .iOS(.v13), .macOS(.v10_15), .tvOS(.v13)
+        .iOS(.v15), .macOS(.v12), .tvOS(.v15)
     ],
     products: [
         .library(name: "SystemKit", targets: ["SystemKit"])

@@ -86,6 +86,16 @@ public struct Path: Codable {
         }
     }
     
+    /// This constructor will `fatalError` if the URL is not a file URL.
+    public init(_ fileURL: URL) {
+        precondition(fileURL.isFileURL)
+        if #available(iOS 16, macOS 13.0, tvOS 16, *) {
+            path = fileURL.path(percentEncoded: false)
+        } else {
+            path = fileURL.path
+        }
+    }
+    
     public func appending(_ path: Path) -> Path {
         Path((self.path as NSString).appendingPathComponent(path.path))
     }
@@ -293,11 +303,27 @@ public extension Path {
         }
         return paths
     }
+    
+    @available(iOS 16, macOS 13.0, tvOS 16, *)
+    static var current: Path {
+        Path(fileManager.currentDirectoryPath)
+    }
 
+    @available(iOS, deprecated: 16.0)
+    @available(macOS, deprecated: 13.0)
+    @available(tvOS, deprecated: 16.0)
     static var currentDirectory: Path {
         Path(fileManager.currentDirectoryPath)
     }
     
+    @available(iOS 16, macOS 13.0, tvOS 16, *)
+    static var home: Path {
+        return Self(.homeDirectory)
+    }
+    
+    @available(iOS, deprecated: 16.0)
+    @available(macOS, deprecated: 13.0)
+    @available(tvOS, deprecated: 16.0)
     static var homeDirectory: Path {
         Path(NSHomeDirectory())
     }
@@ -305,20 +331,44 @@ public extension Path {
     static var temporaryDirectory: Path {
         Path(NSTemporaryDirectory())
     }
-            
+
+    @available(iOS 16, macOS 13.0, tvOS 16, *)
+    static var documents: Path {
+        return Self(.documentsDirectory)
+    }
+    
+    @available(iOS, deprecated: 16.0)
+    @available(macOS, deprecated: 13.0)
+    @available(tvOS, deprecated: 16.0)
     static var documentDirectory: Path? {
-        if let documentDirectory = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).last {
-            return Path(documentDirectory)
+        if #available(iOS 16, macOS 13, tvOS 16, *) {
+            return Path(URL.documentsDirectory.path(percentEncoded: false))
         } else {
-            return nil
+            if let documentDirectory = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).last {
+                return Path(documentDirectory)
+            } else {
+                return nil
+            }
         }
     }
     
+    @available(iOS 16, macOS 13.0, tvOS 16, *)
+    static var caches: Path {
+        return Self(.cachesDirectory)
+    }
+    
+    @available(iOS, deprecated: 16.0)
+    @available(macOS, deprecated: 13.0)
+    @available(tvOS, deprecated: 16.0)
     static var cachesDirectory: Path? {
-        if let directory = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).last {
-            return Path(directory)
+        if #available(iOS 16, macOS 13, tvOS 16, *) {
+            return Path(URL.cachesDirectory.path(percentEncoded: false))
         } else {
-            return nil
+            if let directory = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).last {
+                return Path(directory)
+            } else {
+                return nil
+            }
         }
     }
     
