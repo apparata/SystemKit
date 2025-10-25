@@ -24,7 +24,7 @@ final class SystemKitTests: XCTestCase {
         XCTAssertTrue(ExecutionMode.isRunningUnitTests)
     }
     
-    static var allTests = [
+    static let allTests = [
         ("testPosixPermissions", testPosixPermissions),
         ("testStopWatch", testStopWatch),
         ("testIsUnitTestingCheck", testIsUnitTestingCheck)

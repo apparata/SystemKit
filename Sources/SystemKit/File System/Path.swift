@@ -46,10 +46,10 @@ import Foundation
 /// absolutePath.isReadable
 /// absolutePath.isWritable
 /// ```
-public struct Path: Codable {
-    
-    fileprivate var path: String
-    
+public struct Path: Sendable, Codable {
+
+    fileprivate let path: String
+
     var internalPath: String {
         path
     }
@@ -161,23 +161,29 @@ extension Path: ExpressibleByStringLiteral {
     public typealias ExtendedGraphemeClusterLiteralType = StringLiteralType
     
     public init(unicodeScalarLiteral value: UnicodeScalarLiteralType) {
-        path = "\(value)"
-        if path.isEmpty {
+        let valueString = "\(value)"
+        if valueString.isEmpty {
             path = "."
+        } else {
+            path = valueString
         }
     }
     
     public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
-        path = value
-        if path.isEmpty {
+        let valueString: String = value
+        if valueString.isEmpty {
             path = "."
+        } else {
+            path = valueString
         }
     }
     
     public init(stringLiteral value: StringLiteralType) {
-        path = value
-        if path.isEmpty {
+        let valueString: String = value
+        if valueString.isEmpty {
             path = "."
+        } else {
+            path = valueString
         }
     }
 }
@@ -463,7 +469,7 @@ public extension Path {
     }
 }
 
-public struct PosixPermissions: OptionSet, ExpressibleByIntegerLiteral {
+public struct PosixPermissions: Sendable, OptionSet, ExpressibleByIntegerLiteral {
 
     public let rawValue: Int
     

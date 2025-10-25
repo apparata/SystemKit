@@ -20,7 +20,7 @@ public class CodableFile {
     }
     
     /// Loads synchronously
-    public func load<T: Decodable>(completion: @escaping (Result<T, Error>) -> Void) {
+    public func load<T: Sendable & Decodable>(completion: @escaping @Sendable (Result<T, Error>) -> Void) {
         queue.async { [path] in
             do {
                 guard path.exists else {
@@ -50,7 +50,7 @@ public class CodableFile {
     }
     
     /// Saves asynchronously
-    public func save<T: Codable>(_ object: T) {
+    public func save<T: Sendable & Codable>(_ object: T) {
         queue.async { [path] in
             do {
                 let json = try JSONEncoder().encode(object)

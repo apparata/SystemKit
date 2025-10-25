@@ -6,6 +6,7 @@
 
 import Foundation
 
+@MainActor
 public final class Execution {
     
     public enum SignalType {

@@ -369,7 +369,7 @@ public extension FSEventStreamEventId {
 
 public extension FileEventStream {
     
-    struct Flags: OptionSet {
+    struct Flags: Sendable, OptionSet {
                 
         /// The default.
         public static let none = Flags(kFSEventStreamCreateFlagNone)
@@ -459,8 +459,8 @@ public struct FileEvent {
 
 public extension FileEvent {
         
-    struct Flags: OptionSet, CustomStringConvertible {
-        
+    struct Flags: Sendable, OptionSet, CustomStringConvertible {
+
         /// Your application must rescan not just the directory given in the
         /// event, but all its children, recursively. This can happen if there
         /// was a problem whereby events were coalesced hierarchically. For

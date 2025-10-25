@@ -12,10 +12,9 @@ import Darwin.C
 
 #if os(Linux) || os(macOS)
 
+@MainActor
 public final class ExecutableFinder {
-    
-    static var lock = NSLock()
-    
+
     static var cachedPaths: [String: Path?] = [:]
     
     public static func find(_ name: String) -> Path? {
@@ -32,9 +31,6 @@ public final class ExecutableFinder {
         if fileInCurrentDirectory.exists {
             return fileInCurrentDirectory
         }
-        
-        lock.lock()
-        defer { lock.unlock() }
         
         if let cachedPath = cachedPaths[name] {
             return cachedPath
