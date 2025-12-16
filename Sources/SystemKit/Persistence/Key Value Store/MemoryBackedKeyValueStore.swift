@@ -4,12 +4,45 @@
 
 import Foundation
 
+/// An in-memory implementation of ``KeyValueStore``.
+///
+/// `MemoryBackedKeyValueStore` stores all values in a dictionary in memory.
+/// Data is not persisted and will be lost when the instance is deallocated.
+///
+/// ## Overview
+///
+/// This implementation is useful for:
+/// - Temporary storage during app execution
+/// - Testing without file system dependencies
+/// - Caching data that doesn't need persistence
+///
+/// ## Usage
+///
+/// ```swift
+/// // Create empty store
+/// let store = MemoryBackedKeyValueStore()
+/// store["count"] = 42
+///
+/// // Create with initial values
+/// let initialData = ["name": "Alice", "age": 30]
+/// let preloadedStore = MemoryBackedKeyValueStore(dictionary: initialData)
+/// ```
+///
+/// - Note: For persistent storage, use ``FileBackedKeyValueStore`` instead
 open class MemoryBackedKeyValueStore: KeyValueStore {
-        
+
+    /// The underlying dictionary storing all key-value pairs.
+    ///
+    /// This property is read-only from outside the class but can be
+    /// accessed for inspection or serialization.
     private(set) var dictionary: [String: Any] = [:]
-    
+
+    /// Creates an empty in-memory key-value store.
     public init() { }
-    
+
+    /// Creates an in-memory key-value store with initial values.
+    ///
+    /// - Parameter dictionary: Initial key-value pairs to populate the store
     public init(dictionary: [String: Any]) {
         self.dictionary = dictionary
     }

@@ -6,26 +6,63 @@
 
 import Foundation
 
+/// Manages the main execution loop and signal handling for command-line applications.
+///
+/// `Execution` provides utilities for running macOS command-line applications with
+/// proper signal handling, allowing graceful cleanup when the process receives
+/// termination signals.
+///
+/// ## Overview
+///
+/// This class handles three common Unix signals:
+/// - `SIGINT` (Ctrl-C): User interruption
+/// - `SIGHUP`: Terminal disconnection
+/// - `SIGTERM`: Termination request
+///
+/// ## Usage
+///
+/// ```swift
+/// @MainActor
+/// func main() {
+///     // Set up your application state
+///     let app = MyApplication()
+///
+///     // Run with signal handling
+///     Execution.runUntilTerminated { signal in
+///         print("Received signal: \(signal)")
+///         app.cleanup()
+///         return true  // Exit after cleanup
+///     }
+/// }
+/// ```
+///
+/// - Note: This class is only available on macOS.
 @MainActor
 public final class Execution {
-    
+
+    /// The type of signal received by the process.
     public enum SignalType {
-        /// User interrupted program, typically by pressing Ctrl-C.
+        /// User interrupted program, typically by pressing Ctrl-C (SIGINT).
         case interrupt
-        
-        /// Terminal disconnected, e.g. user closed terminal window.
+
+        /// Terminal disconnected, e.g., user closed terminal window (SIGHUP).
         case terminalDisconnected
-        
-        /// The program is about to be terminated.
+
+        /// The program is about to be terminated (SIGTERM).
         case terminate
     }
-    
-    /// The signal handler is run when the `SIGINT`, `SIGHUP`, or `SIGTERM`
-    /// signal is received by the process. It is used to clean up before
-    /// exiting the program, or to attempt to suppress the signal.
+
+    /// A closure that handles process termination signals.
     ///
-    /// Returns `true` if the program should exit, or `false` to keep running.
-    /// The normal case would be to return `true`.
+    /// The signal handler is invoked when the process receives `SIGINT`, `SIGHUP`,
+    /// or `SIGTERM`. Use this to perform cleanup operations before the process exits.
+    ///
+    /// - Parameter signalType: The type of signal that was received
+    /// - Returns: `true` to exit the program after handling, `false` to suppress
+    ///            the signal and continue running
+    ///
+    /// - Note: In most cases, you should return `true` to allow the process to exit
+    ///         gracefully after cleanup.
     public typealias SignalHandler = (SignalType) -> Bool
     
     /// Private singleton instance.
@@ -33,15 +70,19 @@ public final class Execution {
     
     private var signalSources: [DispatchSourceSignal] = []
     private let signalQueue = DispatchQueue(label: "Execution.signalhandler")
-        
-    /// Starts the main run loop and optionally installs a signal handler
-    /// for the purpose of cleanup before terminating. The signal handler
-    /// will be executed for `SIGINT`, `SIGHUP` and `SIGTERM`.
+
+    /// Starts the main run loop and optionally installs signal handlers.
     ///
-    /// - parameter signalHandler: Optional signal handler to execute before
-    ///                            the program is terminated. If the signal
-    ///                            handler returns `false`, the program will
-    ///                            suppress the signal and not exit.
+    /// This method starts the main `RunLoop` and blocks until the process is terminated.
+    /// If a signal handler is provided, it will be invoked when the process receives
+    /// `SIGINT`, `SIGHUP`, or `SIGTERM` signals.
+    ///
+    /// - Parameter signalHandler: An optional closure to execute when a termination signal
+    ///                           is received. If the handler returns `false`, the signal
+    ///                           is suppressed and the program continues running.
+    ///
+    /// - Note: This method does not return unless a signal handler suppresses all signals.
+    ///         In typical usage, this should be the last statement in your `@MainActor` main function.
     public static func runUntilTerminated(signalHandler: SignalHandler? = nil) {
         if let signalHandler = signalHandler {
             instance.signalSources = instance.installSignalHandler(signalHandler)

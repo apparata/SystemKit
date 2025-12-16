@@ -12,36 +12,100 @@ import Darwin.C
 
 #if os(Linux) || os(macOS)
 
+/// Spawns and manages external processes with output capture support.
+///
+/// `Subprocess` provides a Swift-friendly interface to `posix_spawn` for launching
+/// external programs, capturing their output, and waiting for completion.
+///
+/// ## Overview
+///
+/// This class manages the complete lifecycle of a subprocess:
+/// 1. Create with executable path and arguments
+/// 2. Spawn the process using ``spawn()``
+/// 3. Wait for completion using ``wait()``
+/// 4. Retrieve results including exit status and captured output
+///
+/// ## Usage
+///
+/// ```swift
+/// // Simple execution
+/// let subprocess = Subprocess(
+///     executable: Path("/usr/bin/ls"),
+///     arguments: ["-la", "/tmp"],
+///     captureOutput: true
+/// )
+///
+/// try subprocess.spawn()
+/// let result = try subprocess.wait()
+///
+/// if result.status == 0 {
+///     let output = try result.capturedOutputString()
+///     print(output)
+/// } else {
+///     let error = try result.capturedErrorString()
+///     print("Error: \(error)")
+/// }
+/// ```
+///
+/// - Note: Only available on macOS and Linux platforms
 public class Subprocess {
-    
+
     typealias Arguments = CStrings
     typealias Environment = KeyValueCStrings
-    
+
+    /// The execution state of the subprocess.
     public enum State {
+        /// Initial state, not yet spawned
         case initial
+        /// Currently spawning
         case spawning
+        /// Successfully spawned and running
         case spawned
+        /// Execution finished
         case finished
     }
-    
+
+    /// The process ID of the spawned subprocess.
+    ///
+    /// Only valid after ``spawn()`` has been called successfully.
     public private(set) var processID = pid_t()
-        
+
+    /// The path to the executable to run.
     public let executable: Path
+
+    /// Command-line arguments to pass to the executable.
     public let arguments: [String]
+
+    /// Environment variables for the subprocess.
+    ///
+    /// If empty, the subprocess inherits the parent's environment.
     public let environment: [String: String]
+
+    /// Whether to capture stdout and stderr.
     public let captureOutput: Bool
-    
+
+    /// The result of the subprocess execution.
+    ///
+    /// Only available after ``wait()`` completes successfully.
     public private(set) var result: SubprocessResult? = nil
-    
+
+    /// The current execution state of the subprocess.
     public var state: State {
         return stateMachine.state
     }
-    
+
     private let stateMachine = SubprocessStateMachine()
-    
+
     private var captureOutputThread: SubprocessCaptureThread? = nil
     private var captureErrorThread: SubprocessCaptureThread? = nil
-    
+
+    /// Creates a new subprocess configuration.
+    ///
+    /// - Parameters:
+    ///   - executable: The path to the executable to run
+    ///   - arguments: Command-line arguments (default: empty)
+    ///   - environment: Environment variables (default: empty, inherits parent)
+    ///   - captureOutput: Whether to capture stdout and stderr (default: true)
     public init(executable: Path,
                 arguments: [String] = [],
                 environment: [String: String] = [:],
@@ -51,7 +115,16 @@ public class Subprocess {
         self.environment = environment
         self.captureOutput = captureOutput
     }
-    
+
+    /// Spawns the subprocess.
+    ///
+    /// This method uses `posix_spawn` to launch the executable. After spawning,
+    /// use ``wait()`` to wait for completion and retrieve results.
+    ///
+    /// - Throws: ``SubprocessError/executableNotFound(name:)`` if the executable
+    ///           doesn't exist, ``SubprocessError/alreadySpawned`` if already spawned,
+    ///           or ``SubprocessError/failedToSpawn(errorCode:arguments:)`` if
+    ///           spawning fails
     public func spawn() throws {
                 
         guard executable.exists else {
@@ -84,6 +157,15 @@ public class Subprocess {
         stateMachine.enterSpawnedState()
     }
         
+    /// Waits for the subprocess to complete and returns the result.
+    ///
+    /// This method blocks until the subprocess exits. It should only be called
+    /// after ``spawn()`` has been called successfully.
+    ///
+    /// - Returns: The ``SubprocessResult`` containing exit status and captured output
+    /// - Throws: ``SubprocessError/thereIsNoResult`` if the subprocess hasn't been
+    ///           spawned, or ``SubprocessError/failedToWaitForExit(errorCode:)`` if
+    ///           waiting fails
     @discardableResult
     public func wait() throws -> SubprocessResult {
         

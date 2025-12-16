@@ -4,20 +4,79 @@
 
 import Foundation
 
+/// A file-backed persistent implementation of ``KeyValueStore``.
+///
+/// `FileBackedKeyValueStore` stores key-value pairs in a property list file,
+/// automatically persisting changes to disk and using file locking for thread safety.
+///
+/// ## Overview
+///
+/// This implementation:
+/// - Automatically saves to disk on every change
+/// - Loads existing data on initialization
+/// - Uses file locking to prevent concurrent access issues
+/// - Supports transactions for batching multiple changes
+///
+/// ## Usage
+///
+/// ```swift
+/// let storePath = Path.documentDirectory!
+///     .appendingComponent("settings.plist").string
+/// let store = FileBackedKeyValueStore(path: storePath)
+///
+/// // Changes are automatically persisted
+/// store["theme"] = "dark"
+/// store["fontSize"] = 14
+///
+/// // Use transactions for multiple changes
+/// try store.transaction { store in
+///     store["key1"] = "value1"
+///     store["key2"] = "value2"
+///     store["key3"] = "value3"
+///     // All changes persisted at once when transaction completes
+/// }
+/// ```
+///
+/// - Note: Each write operation triggers a save to disk. Use ``transaction(actions:)``
+///         for better performance when making multiple changes.
 open class FileBackedKeyValueStore: KeyValueStore {
 
+    /// The underlying dictionary storing all key-value pairs.
+    ///
+    /// This property is read-only from outside the class but can be
+    /// accessed for inspection or serialization.
     private(set) var dictionary: [String: Any] = [:]
-    
+
     private let path: String
-    
+
+    /// Creates a file-backed key-value store at the specified path.
+    ///
+    /// If a file exists at the path, it will be loaded. Otherwise, an empty
+    /// store is created and will be saved to the path on the first write.
+    ///
+    /// - Parameter path: The file path where data should be persisted
     public init(path: String) {
         self.path = path
         dictionary = restore()
     }
-    
-    /// Use transaction if you only want to write the store to file once
-    /// for a number of changes, as opposed to for every change.
-    /// Transaction throws if persist operation fails.
+
+    /// Performs multiple changes in a transaction, persisting only once.
+    ///
+    /// Use transactions to improve performance when making multiple changes,
+    /// as the store is only written to disk once at the end of the transaction.
+    ///
+    /// - Parameter actions: A closure that performs the desired changes
+    /// - Throws: Any error from the persist operation or from the actions closure
+    ///
+    /// ## Example
+    ///
+    /// ```swift
+    /// try store.transaction { store in
+    ///     store["name"] = "Alice"
+    ///     store["age"] = 30
+    ///     store["city"] = "Portland"
+    /// }
+    /// ```
     public func transaction(actions: (KeyValueStore) throws -> Void) throws {
         let keyValueStore = MemoryBackedKeyValueStore(dictionary: dictionary)
         try actions(self)

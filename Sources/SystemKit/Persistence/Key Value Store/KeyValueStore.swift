@@ -4,10 +4,42 @@
 
 import Foundation
 
+/// A protocol for read-only access to type-safe key-value storage.
+///
+/// `ReadOnlyKeyValueStore` provides subscript-based access to stored values with
+/// automatic type conversion. Each type has two subscript variants:
+/// - Optional return: `store[key] -> Type?`
+/// - Default value: `store[key, default: value] -> Type`
+///
+/// ## Supported Types
+///
+/// - `Any` - Untyped objects
+/// - `[Any]` - Arrays of any type
+/// - `[String: Any]` - Dictionaries
+/// - `String` - Strings
+/// - `[String]` - String arrays
+/// - `Data` - Binary data
+/// - `Bool` - Booleans
+/// - `Int` - Integers
+/// - `Float` - Floating-point numbers
+/// - `Double` - Double-precision numbers
+/// - `URL` - URLs
+/// - `Date` - Dates
+/// - `Locale` - Locales
 public protocol ReadOnlyKeyValueStore {
-    
-    /// Object
+
+    /// Retrieves an object value for the specified key.
+    ///
+    /// - Parameter key: The key to look up
+    /// - Returns: The stored value, or `nil` if not found
     subscript(key: String) -> Any? { get }
+
+    /// Retrieves an object value for the specified key, with a default.
+    ///
+    /// - Parameters:
+    ///   - key: The key to look up
+    ///   - default: The value to return if the key is not found
+    /// - Returns: The stored value, or the default if not found
     subscript(key: String, default: Any) -> Any { get }
 
     /// Array
@@ -59,24 +91,64 @@ public protocol ReadOnlyKeyValueStore {
     subscript(key: String, default: Locale) -> Locale { get }
 }
 
+/// A protocol for read-write access to type-safe key-value storage.
+///
+/// `KeyValueStore` extends ``ReadOnlyKeyValueStore`` with write capabilities.
+/// Setting a value to `nil` removes that key from the store.
+///
+/// ## Usage
+///
+/// ```swift
+/// var store: KeyValueStore = MemoryBackedKeyValueStore()
+///
+/// // Store values
+/// store["username"] = "alice"
+/// store["age"] = 30
+/// store["isPremium"] = true
+///
+/// // Retrieve values
+/// let name: String? = store["username"]
+/// let age = store["age", default: 0]
+///
+/// // Remove values
+/// store["username"] = nil
+/// ```
+///
+/// ## Implementations
+///
+/// SystemKit provides two implementations:
+/// - ``MemoryBackedKeyValueStore`` - In-memory storage
+/// - ``FileBackedKeyValueStore`` - File-backed persistent storage
 public protocol KeyValueStore: ReadOnlyKeyValueStore {
-    
-    /// Object
+
+    /// Gets or sets an object value for the specified key.
+    ///
+    /// Setting to `nil` removes the key from the store.
     subscript(key: String) -> Any? { get set }
-    
-    /// Array
+
+    /// Gets or sets an array value for the specified key.
+    ///
+    /// Setting to `nil` removes the key from the store.
     subscript(key: String) -> [Any]? { get set }
-    
-    /// Dictionary
+
+    /// Gets or sets a dictionary value for the specified key.
+    ///
+    /// Setting to `nil` removes the key from the store.
     subscript(key: String) -> [String: Any]? { get set }
-    
-    /// String
+
+    /// Gets or sets a string value for the specified key.
+    ///
+    /// Setting to `nil` removes the key from the store.
     subscript(key: String) -> String? { get set }
-    
-    /// Array of strings
+
+    /// Gets or sets a string array value for the specified key.
+    ///
+    /// Setting to `nil` removes the key from the store.
     subscript(key: String) -> [String]? { get set }
-    
-    /// Data
+
+    /// Gets or sets binary data for the specified key.
+    ///
+    /// Setting to `nil` removes the key from the store.
     subscript(key: String) -> Data? { get set }
     
     /// Bool
